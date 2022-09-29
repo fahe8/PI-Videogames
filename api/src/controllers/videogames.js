@@ -1,7 +1,7 @@
 require("dotenv").config();
 const axios = require("axios");
 const { API_KEY } = process.env;
-const { Videogame, Genre } = require("../db");
+const { Videogame, Genre, Op } = require("../db");
 
 // Retorna los videojuegos que contiene la database
 const getGamesDb = async () => {
@@ -41,7 +41,6 @@ const getGamesApi = async () => {
     gamesResume.push({
       id: g.id,
       name: g.name,
-      description: !g.description ? "No hay descricion" : g.description,
       released: g.released,
       rating: g.rating,
       platforms: g.platforms.map((p) => p.platform.name),
@@ -60,32 +59,86 @@ const getAllGames = async () => {
 };
 
 
-/**
- * TODO: Debo verificar que sucede cuando la query(game) es vacio
- * @param {*} game 
- * @returns 
- */
-
 const getGameQuery = async (game) => {
-  console.log(game)
-  if (!game) {
-    throw new Error("No se recibió algo por query");
-  }
-  if(game.length == 0) {throw new Error("La query está vacia")} //MODIFICAR
-  
   const url = ` https://api.rawg.io/api/games?key=${API_KEY}&search=${game}`;
   const promiseRes = await axios.get(url);
   const result = promiseRes.data.results.slice(0, 15);
-  if (result.length) {
-    return result;
-  } else {
+  
+  if (!result.length) {
     throw new Error(
       `La busqueda no ha encontrado algo relacionado con ${game} `
     );
-  }
-  
+  } 
+  const fifteenGames = result.map((g) => {
+    return {
+      id: g.id,
+      name: g.name,
+      released: g.released,
+      rating: g.rating,
+      platforms: g.platforms.map((p) => p.platform.name),
+      image: g.background_image,
+      genres: g.genres.map((g) => g.name),
+    };
+  });
 
-  
+  const gameDb = await Videogame.findAll({
+    where: {
+      name: {
+        [Op.iLike] : `%${game}%`
+      }
+    },
+    include: {
+      model: Genre,
+      attributes: ['name'],
+      through: {
+        attributes: [],
+      },
+    },
+  })
+  return [...gameDb, ...fifteenGames].slice(0,15);
 };
 
-module.exports = { getAllGames, getGameQuery };
+const getGameApiId = async (id) => {
+  const url = `https://api.rawg.io/api/games/${id}?key=${API_KEY}`;
+  const promiseRes = await axios.get(url);
+  const fullData =  promiseRes.data 
+  const resumeInfo = {
+    id: fullData.id,
+    name: fullData.name,
+    description: !fullData.description ? "No hay descricion" : fullData.description,
+    released: fullData.released,
+    rating: fullData.rating,
+    platforms: fullData.platforms.map((p) => p.platform.name),
+    image: fullData.background_image,
+    genres: fullData.genres.map((g) => g.name),
+  }
+  return resumeInfo
+};
+
+const getGameDbId = async (id) => {
+  const gameId = await Videogame.findByPk(id, {
+    includes: {
+      model: Genre,
+      attributes: ["name"],
+      throught:{
+        attributes: []
+      }
+    }
+  })
+  if(gameId==null) {
+    throw new Error('No se encontró en la database')
+  }
+  return gameId
+}
+
+const getGameId = async (id) => {
+  if(id.includes('db')) {
+    return await getGameDbId(id)
+  } else {
+    return await getGameApiId(id)
+  }
+
+
+}
+
+module.exports = { getAllGames, getGameQuery, getGameId };
