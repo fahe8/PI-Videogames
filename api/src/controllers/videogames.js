@@ -58,7 +58,7 @@ const getAllGames = async () => {
   return [...gameDb, ...gameApi];
 };
 
-
+// Encuentra y retorna 15 juegos por query desde la Api y Databse
 const getGameQuery = async (game) => {
   const url = ` https://api.rawg.io/api/games?key=${API_KEY}&search=${game}`;
   const promiseRes = await axios.get(url);
@@ -80,7 +80,7 @@ const getGameQuery = async (game) => {
       genres: g.genres.map((g) => g.name),
     };
   });
-
+  console.log(fifteenGames)
   const gameDb = await Videogame.findAll({
     where: {
       name: {
@@ -95,8 +95,15 @@ const getGameQuery = async (game) => {
       },
     },
   })
-  return [...gameDb, ...fifteenGames].slice(0,15);
+  
+  console.log('gameDb')
+  let total = []
+  return total = [...fifteenGames].slice(0,15);
 };
+
+const getQuery = async() => {
+
+}
 
 const getGameApiId = async (id) => {
   const url = `https://api.rawg.io/api/games/${id}?key=${API_KEY}`;
@@ -137,8 +144,41 @@ const getGameId = async (id) => {
   } else {
     return await getGameApiId(id)
   }
-
-
 }
 
-module.exports = { getAllGames, getGameQuery, getGameId };
+const createGames = async (game) => {
+
+  let id = 0
+  const { name, description,released, image,rating,platforms,genres } = game
+  if(name && description && platforms.length > 0) {
+    const [videoGame, created] = await Videogame.findOrCreate({
+      where: { name: name },
+      defaults: {
+        id:`db${++id}`,
+        description : description,
+        released: released || null,
+        image: image || null,
+        rating: rating || null,
+        platforms: platforms
+      }
+    });
+
+    if(!created) {
+      return  Error('Ya existe un juego con estos datos')
+
+    }
+    const relacion = await Genre.findAll({
+      where: {
+        name: genres
+      }
+    })
+    videoGame.addGenre(relacion)
+    return  'Se creó exitosamente'
+    
+    
+  } else {throw new Error('Los datos obligatorios estan vacios')}
+ 
+}
+
+
+module.exports = { getAllGames, getGameQuery, getGameId, createGames };
