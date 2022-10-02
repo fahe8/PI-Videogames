@@ -62,11 +62,11 @@ const getGameQuery = async (game) => {
   const promiseRes = await axios.get(url);
   const result = promiseRes.data.results.slice(0, 15);
   
-  if (!result.length) {
-    throw new Error(
-      `La busqueda no ha encontrado algo relacionado con ${game} `
-    );
-  } 
+  // if (!result.length) {
+  //   throw new Error(
+  //     `La busqueda no ha encontrado algo relacionado con ${game} `
+  //   );
+  // } 
   const fifteenGames = result.map((g) => {
     return {
       id: g.id,
@@ -80,7 +80,8 @@ const getGameQuery = async (game) => {
   });
   const gameDb = await Videogame.findAll({
     where: {
-      name: {[Op.iLike]: `%${game}%`}
+      name: {[Op.iLike]: `%${game}%`},
+
     },
     include: {
       model: Genre,
