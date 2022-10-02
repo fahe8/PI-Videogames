@@ -109,6 +109,7 @@ const getGameApiId = async (id) => {
 };
 
 const getGameDbId = async (id) => {
+  console.log(id)
   const gameId = await Videogame.findByPk(id, {
     includes: {
       model: Genre,
@@ -125,7 +126,7 @@ const getGameDbId = async (id) => {
 }
 
 const getGameId = async (id) => {
-  if(id.includes('.')) {
+  if(id.includes('-')) {
     return await getGameDbId(id)
   } else {
     return await getGameApiId(id)
@@ -135,13 +136,10 @@ const getGameId = async (id) => {
 const createGames = async (game) => {
 
   const { name, description,released, image,rating,platforms,genres } = game
-  const numberRandom = `${Math.random()}`
-  let id = `${numberRandom.slice(1)}${name.charCodeAt()}`
   if(name && description && platforms.length > 0) {
     const [videoGame, created] = await Videogame.findOrCreate({
       where: { name: name },
       defaults: {
-        id:id,
         description : description,
         released: released || null,
         image: image || null,
