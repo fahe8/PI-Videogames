@@ -1,17 +1,15 @@
 require("dotenv").config();
 const axios = require("axios");
 const { API_KEY } = process.env;
-const { Videogame, Genre, Op } = require("../db");
+const { Videogame, Genre } = require("../db");
+const { Op } = require('sequelize'); 
 
 // Retorna los videojuegos que contiene la database
 const getGamesDb = async () => {
   const videoGames = await Videogame.findAll({
-    includes: {
+    include: {
       model: Genre,
       attributes: ["name"],
-      throught: {
-        attributes: [],
-      },
     },
   });
   return videoGames;
@@ -80,30 +78,18 @@ const getGameQuery = async (game) => {
       genres: g.genres.map((g) => g.name),
     };
   });
-  console.log(fifteenGames)
   const gameDb = await Videogame.findAll({
     where: {
-      name: {
-        [Op.iLike] : `%${game}%`
-      }
+      name: {[Op.iLike]: `%${game}%`}
     },
     include: {
       model: Genre,
-      attributes: ['name'],
-      through: {
-        attributes: [],
-      },
-    },
+      attributes: ["name"]
+    }
   })
   
-  console.log('gameDb')
-  let total = []
-  return total = [...fifteenGames].slice(0,15);
+  return total = [...gameDb,...fifteenGames];
 };
-
-const getQuery = async() => {
-
-}
 
 const getGameApiId = async (id) => {
   const url = `https://api.rawg.io/api/games/${id}?key=${API_KEY}`;
@@ -139,7 +125,7 @@ const getGameDbId = async (id) => {
 }
 
 const getGameId = async (id) => {
-  if(id.includes('db')) {
+  if(id.includes('.')) {
     return await getGameDbId(id)
   } else {
     return await getGameApiId(id)
@@ -148,13 +134,14 @@ const getGameId = async (id) => {
 
 const createGames = async (game) => {
 
-  let id = 0
   const { name, description,released, image,rating,platforms,genres } = game
+  const numberRandom = `${Math.random()}`
+  let id = `${numberRandom.slice(1)}${name.charCodeAt()}`
   if(name && description && platforms.length > 0) {
     const [videoGame, created] = await Videogame.findOrCreate({
       where: { name: name },
       defaults: {
-        id:`db${++id}`,
+        id:id,
         description : description,
         released: released || null,
         image: image || null,
@@ -163,17 +150,16 @@ const createGames = async (game) => {
       }
     });
 
-    if(!created) {
-      return  Error('Ya existe un juego con estos datos')
-
+    if(created) {
+      const relacion = await Genre.findAll({
+        where: {
+          name: genres
+        }
+      })
+      videoGame.addGenre(relacion)
+      return  'Se creó exitosamente'
     }
-    const relacion = await Genre.findAll({
-      where: {
-        name: genres
-      }
-    })
-    videoGame.addGenre(relacion)
-    return  'Se creó exitosamente'
+    return  Error('Ya existe un juego con estos datos')
     
     
   } else {throw new Error('Los datos obligatorios estan vacios')}
