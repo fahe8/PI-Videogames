@@ -1,5 +1,6 @@
 import React from 'react'
 import s from './ladding.module.css'
+import { Link } from 'react-router-dom'
 
 function Ladding() {
   return (
@@ -9,7 +10,7 @@ function Ladding() {
           <h1 >VIDEOJUEGOS</h1>
           <h2 >Ingresa y busca tus favoritos</h2>
         </div>
-          <button className={s.btn}>INGRESAR</button>
+          <Link to= '/home'><button className={s.btn}>INGRESAR</button></Link>
       </div>
     </div>
   )

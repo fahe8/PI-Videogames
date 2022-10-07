@@ -72,8 +72,8 @@ h2 {
     }
 }
 
-/* From uiverse.io by @CristianMontoya98 */
 .btn {
+    
     margin-top: 20px;
     padding: 20px 30px;
     background: #fff;
@@ -88,11 +88,11 @@ h2 {
     overflow: hidden;
    }
    
-   button:hover {
+   .btn:hover {
     color: #fff;
    }
    
-   button:after {
+   .btn:after {
     content: "";
     background: rgb(95, 95, 95);
     position: absolute;
@@ -105,8 +105,17 @@ h2 {
     transition: all 0.5s;
    }
    
-   button:hover:after {
+   .btn:hover:after {
     transform: skewX(-45deg) scale(1, 1);
     -webkit-transition: all 0.5s;
     transition: all 0.5s;
+   }
+
+   @media only screen and (max-width: 540px) {
+    h1 {
+        font-size: 10vw;
+    }
+    h2 {
+        font-size: 7vw;
+    }
    }

@@ -39,7 +39,6 @@ const getGamesApi = async () => {
     gamesResume.push({
       id: g.id,
       name: g.name,
-      released: g.released,
       rating: g.rating,
       platforms: g.platforms.map((p) => p.platform.name),
       image: g.background_image,

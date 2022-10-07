@@ -1,0 +1,13 @@
+.containerCards {
+    max-width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+    display: grid;
+}
+@media (min-width: 600px) {
+    .containerCards { grid-template-columns: repeat(2, 1fr); }
+  }
+
+@media (min-width: 900px) {
+.containerCards { grid-template-columns: repeat(3, 1fr); }
+}
