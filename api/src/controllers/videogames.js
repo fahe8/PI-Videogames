@@ -39,8 +39,6 @@ const getGamesApi = async () => {
     gamesResume.push({
       id: g.id,
       name: g.name,
-      rating: g.rating,
-      platforms: g.platforms.map((p) => p.platform.name),
       image: g.background_image,
       genres: g.genres.map((g) => g.name),
     });
@@ -70,11 +68,8 @@ const getGameQuery = async (game) => {
     return {
       id: g.id,
       name: g.name,
-      released: g.released,
-      rating: g.rating,
-      platforms: g.platforms.map((p) => p.platform.name),
       image: g.background_image,
-      genres: g.genres.map((g) => g.name),
+      genres: g.genres?.map((g) => g.name),
     };
   });
   const gameDb = await Videogame.findAll({
@@ -87,8 +82,9 @@ const getGameQuery = async (game) => {
       attributes: ["name"]
     }
   })
-  
-  return total = [...gameDb,...fifteenGames];
+ let total = [...gameDb,...fifteenGames]
+  if(total.length===0) {throw new Error('No se encontró algo')}
+  return total;
 };
 
 const getGameApiId = async (id) => {
@@ -101,9 +97,9 @@ const getGameApiId = async (id) => {
     description: !fullData.description ? "No hay descricion" : fullData.description,
     released: fullData.released,
     rating: fullData.rating,
-    platforms: fullData.platforms.map((p) => p.platform.name),
+    platforms: fullData.platforms?.map((p) => p.platform.name),
     image: fullData.background_image,
-    genres: fullData.genres.map((g) => g.name),
+    genres: fullData.genres?.map((g) => g.name),
   }
   return resumeInfo
 };

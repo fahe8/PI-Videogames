@@ -5,7 +5,6 @@ import { nextPage, prevPage, currentPage } from "../../Redux/actions";
 import s from "./pagination.module.css";
 
 function Pagination({ page, pageMax }) {
-    console.log(pageMax);
   let [valueInput, setValueInput] =  useState(1)
 
   let dispatch = useDispatch();

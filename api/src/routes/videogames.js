@@ -17,7 +17,8 @@ const axios = require('axios')
         }
 
     } catch (error) {
-        res.send(error.mesagge)
+        console.log(error.message)
+        res.status(404).send(error.message)
     }
 
 })
@@ -27,7 +28,7 @@ router.get('/:idVideogame', async(req,res) => {
         const gameParam = await getGameId(idVideogame);
         res.send(gameParam);
     } catch (error) {
-        res.send(error.mesagge);
+        res.send(error.message);
     }
 })
 router.post('/', async(req,res) => {
@@ -35,7 +36,7 @@ router.post('/', async(req,res) => {
         const createGame = await createGames(req.body)
         res.send( createGame )
     } catch (error) {
-        res.send(error.mesagge)
+        res.send(error.message)
     }
 
 })

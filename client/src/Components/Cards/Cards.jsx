@@ -1,28 +1,36 @@
-import React, { useEffect } from "react";
-import { getAllGames } from "../../Redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import Card from "../Card/Card";
 import Pagination from "../Pagination/Pagination";
+import Loading from '../Loading/Loading'
+import NotFound from "../NotFound/NotFound";
 import s from "./cards.module.css";
+import { useEffect } from "react";
+import { getAllGames } from "../../Redux/actions";
 function Cards() {
-  let dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getAllGames());
-  }, []);
-
-
   let allGames = useSelector((state) => state.videoGames);
   let page = useSelector((state) => state.page);
   let gamesPerPage = useSelector((state) => state.gamesPerPage);
   let pageMax = Math.ceil(allGames.length / gamesPerPage)
+  let loading = useSelector(state => state.loading)
+  let dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(getAllGames())
+  }, []);
+
+  if(loading) {
+    return <Loading></Loading>
+  }
   
+  if(allGames.length === 0) {
+    return <NotFound></NotFound>
+  }
+
   return (
-    <div>
-      <Pagination page = {page} gamesPerPage = {gamesPerPage} pageMax = {pageMax}></Pagination>
+    <div className={s.container}>
+      <Pagination page = {page} pageMax = {pageMax}></Pagination>
       <div className={s.containerCards}>
-        {allGames
-          ?.slice(
+        {
+          allGames?.slice(
             (page - 1) * gamesPerPage,
             (page - 1) * gamesPerPage + gamesPerPage
           )
