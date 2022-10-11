@@ -2,7 +2,7 @@ require("dotenv").config();
 const axios = require("axios");
 const { API_KEY } = process.env;
 const { Videogame, Genre } = require("../db");
-const { Op } = require('sequelize'); 
+const { Op } = require("sequelize");
 
 // Retorna los videojuegos que contiene la database
 const getGamesDb = async () => {
@@ -40,10 +40,10 @@ const getGamesApi = async () => {
       id: g.id,
       name: g.name,
       image: g.background_image,
-      genres: g.genres.map((g) => g.name),
+      platforms: g.platforms?.map((p) => p.platform.name),
+      genres: g.genres?.map((g) => g.name),
     });
   });
-
   return gamesResume;
 };
 // Retorna los 100 videojuegos extraidos de la api y los de la database
@@ -58,12 +58,6 @@ const getGameQuery = async (game) => {
   const url = ` https://api.rawg.io/api/games?key=${API_KEY}&search=${game}`;
   const promiseRes = await axios.get(url);
   const result = promiseRes.data.results.slice(0, 15);
-  
-  // if (!result.length) {
-  //   throw new Error(
-  //     `La busqueda no ha encontrado algo relacionado con ${game} `
-  //   );
-  // } 
   const fifteenGames = result.map((g) => {
     return {
       id: g.id,
@@ -74,91 +68,94 @@ const getGameQuery = async (game) => {
   });
   const gameDb = await Videogame.findAll({
     where: {
-      name: {[Op.iLike]: `%${game}%`},
-
+      name: { [Op.iLike]: `%${game}%` },
     },
     include: {
       model: Genre,
-      attributes: ["name"]
-    }
-  })
- let total = [...gameDb,...fifteenGames]
-  if(total.length===0) {throw new Error('No se encontró algo')}
+      attributes: ["name"],
+    },
+  });
+  let total = [...gameDb, ...fifteenGames];
+  if (total.length === 0) {
+    throw new Error("No se encontró algo");
+  }
   return total;
 };
 
 const getGameApiId = async (id) => {
   const url = `https://api.rawg.io/api/games/${id}?key=${API_KEY}`;
   const promiseRes = await axios.get(url);
-  const fullData =  promiseRes.data 
+  const fullData = promiseRes.data;
   const resumeInfo = {
     id: fullData.id,
     name: fullData.name,
-    description: !fullData.description ? "No hay descricion" : fullData.description,
+    description: !fullData.description
+      ? "No hay descricion"
+      : fullData.description,
     released: fullData.released,
     rating: fullData.rating,
     platforms: fullData.platforms?.map((p) => p.platform.name),
     image: fullData.background_image,
     genres: fullData.genres?.map((g) => g.name),
-  }
-  return resumeInfo
+  };
+  return resumeInfo;
 };
 
 const getGameDbId = async (id) => {
-  console.log(id)
+  console.log(id);
   const gameId = await Videogame.findByPk(id, {
-    includes: {
+    include: {
       model: Genre,
       attributes: ["name"],
-      throught:{
-        attributes: []
-      }
-    }
-  })
-  if(gameId==null) {
-    throw new Error('No se encontró en la database')
+      throught: {
+        attributes: [],
+      },
+    },
+  });
+  if (gameId == null) {
+    throw new Error("No se encontró en la database");
   }
-  return gameId
-}
+  return gameId;
+};
 
 const getGameId = async (id) => {
-  if(id.includes('-')) {
-    return await getGameDbId(id)
+  if (id.includes("-")) {
+    return await getGameDbId(id);
   } else {
-    return await getGameApiId(id)
+    return await getGameApiId(id);
   }
-}
+};
 
 const createGames = async (game) => {
-
-  const { name, description,released, image,rating,platforms,genres } = game
-  if(name && description && platforms.length > 0) {
+  const { name, description, released, image, rating, platforms, genres } =
+    game;
+  if (name && description && platforms.length > 0) {
     const [videoGame, created] = await Videogame.findOrCreate({
       where: { name: name },
       defaults: {
-        description : description,
+        description: description,
         released: released || null,
         image: image || null,
         rating: rating || null,
-        platforms: platforms
-      }
+        platforms: platforms,
+      },
     });
 
-    if(created) {
+    if (created) {
       const relacion = await Genre.findAll({
         where: {
-          name: genres
-        }
-      })
-      videoGame.addGenre(relacion)
-      return  'Se creó exitosamente'
+          name: genres,
+        },
+      });
+      videoGame.addGenre(relacion);
+      return "Se creó exitosamente";
     }
-    return  Error('Ya existe un juego con estos datos')
-    
-    
-  } else {throw new Error('Los datos obligatorios estan vacios')}
- 
-}
+    return "Ya existe un juego con estos datos";
+  } else {
+    throw new Error("Los datos obligatorios estan vacios");
+  }
+};
 
 
-module.exports = { getAllGames, getGameQuery, getGameId, createGames };
+
+module.exports = { getAllGames, getGameQuery, getGameId, createGames, getGamesApi };

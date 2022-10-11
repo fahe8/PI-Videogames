@@ -44,7 +44,7 @@ function Pagination({ page, pageMax }) {
       <form action="" onSubmit={(e) => {onKeyDown(e)}}>
       <input
         onChange={e => onChange(e)}
-        value={valueInput}
+        value={page}
       />
       </form>
       

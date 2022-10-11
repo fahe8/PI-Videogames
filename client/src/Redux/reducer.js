@@ -1,9 +1,10 @@
-import {GET_VIDEOGAMES,NEXT_PAGE, PREV_PAGE, CURRENT_PAGE, LOADING} from './actions'
+import {GET_VIDEOGAMES,NEXT_PAGE, PREV_PAGE, CURRENT_PAGE, LOADING, GET_DETAIL, GET_PLATFORMS} from './actions'
 
 const initialState = {
     videoGames: [],
-    VideoGamesDetail: {},
-    Genres: [],
+    videoGamesDetail: {},
+    genres: [],
+    platforms: [],
     page: 1,
     gamesPerPage: 15,
     loading: false
@@ -16,6 +17,12 @@ const rootReducer = (state = initialState, action ) => {
                 ...state,
                 loading: false,
                 videoGames: action.payload
+            }
+        case GET_DETAIL :
+            return {
+                ...state,
+                loading: false,
+                videoGamesDetail: action.payload
             }
 
         case NEXT_PAGE :
@@ -38,8 +45,12 @@ const rootReducer = (state = initialState, action ) => {
                 ...state,
                 loading: true
             }
-    
-        default:
+        case GET_PLATFORMS :
+            return {
+                ...state,
+                platforms: action.payload
+            }
+        default: 
         return {...state}
     }
 }

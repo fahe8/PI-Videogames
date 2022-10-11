@@ -1,0 +1,29 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+}
+
+.container .formCreate{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.container .formCreate .containerInput {
+    width: 100%;
+    
+}
+.container .formCreate .containerInput span {
+    margin-right: 20px;
+}
+.container .inputCreate {
+    color: aliceblue;
+    width: 300px;
+    background-color: #000;
+}
+
+.container select {
+    color: aliceblue;
+    width: 300px;
+    background-color: #000;
+}

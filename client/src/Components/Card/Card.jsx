@@ -1,9 +1,10 @@
 import React from "react";
 import s from "./card.module.css";
-
+import { Link } from "react-router-dom"
 function Card({ id, name, image, genres, rating, platforms }) {
   return (
-    <div className={s.card} style={{ backgroundImage: `url(${image})` }}>
+    <Link to={`/detail/${id}`}>
+      <div className={s.card} style={{ backgroundImage: `url(${image})` }}>
       <div className={s.text}>
         <h3>{name}</h3>
         <div>
@@ -13,6 +14,7 @@ function Card({ id, name, image, genres, rating, platforms }) {
         </div>
       </div>
     </div>
+    </Link>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import './App.css';
 import Ladding from'./Components/Ladding/Ladding.jsx'
@@ -11,10 +11,12 @@ import CreateGame from './Components/CreateGame/CreateGame.jsx'
 function App() {
   return (
     <div className="App">
+      <Switch>
       <Route exact path='/' component={Ladding}></Route>
       <Route path='/home' component={Home}></Route>
-      <Route path='/detail' component={Detail}></Route>
+      <Route path='/detail/:id' component={Detail}></Route>
       <Route path='/create' component={CreateGame}></Route>
+      </Switch>
     </div>
   );
 }

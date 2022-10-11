@@ -5,7 +5,7 @@ import Loading from '../Loading/Loading'
 import NotFound from "../NotFound/NotFound";
 import s from "./cards.module.css";
 import { useEffect } from "react";
-import { getAllGames } from "../../Redux/actions";
+import { getAllGames, getPlatforms } from "../../Redux/actions";
 function Cards() {
   let allGames = useSelector((state) => state.videoGames);
   let page = useSelector((state) => state.page);
@@ -15,11 +15,11 @@ function Cards() {
   let dispatch = useDispatch()
   useEffect(() => {
     dispatch(getAllGames())
-  }, []);
+  },[dispatch]);
 
-  if(loading) {
-    return <Loading></Loading>
-  }
+  // if(loading) {
+  //   return <Loading></Loading>
+  // }
   
   if(allGames.length === 0) {
     return <NotFound></NotFound>
@@ -36,7 +36,7 @@ function Cards() {
           )
           .map((game, i) => (
             <Card key={i}
-            genres={game.genres?.map(genre => typeof genre === 'object'? genre.name: genre )}
+            genres={game.genres?.map(genre =>  typeof genre === 'object'? genre.name: genre )}
             id={game.id}
             image={game.image}
             name={game.name}

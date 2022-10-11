@@ -1,7 +1,6 @@
 const { Router } = require('express')
-const {getAllGames, getGameQuery, getGameId, createGames} = require('../controllers/videogames')
+const {getAllGames, getGameQuery, getGameId, createGames, getPlatform} = require('../controllers/videogames')
 const router = Router()
-const axios = require('axios')
 
 
  router.get('/', async  (req,res) => {
@@ -31,6 +30,7 @@ router.get('/:idVideogame', async(req,res) => {
         res.send(error.message);
     }
 })
+
 router.post('/', async(req,res) => {
     try {
         const createGame = await createGames(req.body)
@@ -40,4 +40,5 @@ router.post('/', async(req,res) => {
     }
 
 })
+
 module.exports = router
