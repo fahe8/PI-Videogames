@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { getAllGames } from "../../Redux/actions";
 import s from "./search.module.css";

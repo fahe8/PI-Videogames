@@ -40,6 +40,7 @@ const getGamesApi = async () => {
       id: g.id,
       name: g.name,
       image: g.background_image,
+      rating: g.rating,
       platforms: g.platforms?.map((p) => p.platform.name),
       genres: g.genres?.map((g) => g.name),
     });

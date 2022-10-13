@@ -12,6 +12,7 @@ function Card({ id, name, image, genres, rating, platforms }) {
             <p key={i}>{genre}</p>
           ))}
         </div>
+        <p>{rating}</p>
       </div>
     </div>
     </Link>
