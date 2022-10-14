@@ -10,6 +10,7 @@ export const GET_DETAIL = "GET_DETAIL";
 export const GET_PLATFORMS = "GET_PLATFORMS";
 export const GET_GENRES = "GET_GENRES";
 export const ORDER_BY = "ORDER_BY";
+export const FILTERGENRE = "FILTERGENRE"
 
 export const getAllGames = (game) => {
   return async (dispatch) => {
@@ -89,3 +90,8 @@ export const loading = () => {
 export const orderBy = (order) => {
   return { type: "ORDER_BY", payload: order };
 };
+
+export const filterGenre = (filter) => {
+
+  return {type: "FILTERGENRE", payload: filter}
+}

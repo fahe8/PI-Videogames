@@ -1,27 +1,29 @@
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Card from "../Card/Card";
 import Pagination from "../Pagination/Pagination";
 import Loading from '../Loading/Loading'
 import NotFound from "../NotFound/NotFound";
-import Filters from "../Card/Filters/Filters";
+import Filters from "../Filters/Filters";
 import s from "./cards.module.css";
 import f  from '../Loading/loading.module.css'
-import { useEffect } from "react";
-import { getAllGames, getPlatforms, getGenres } from "../../Redux/actions";
+import { getAllGames, getGenres} from "../../Redux/actions";
+
 function Cards() {
   let allGames = useSelector((state) => state.videoGames);
   let page = useSelector((state) => state.page);
   let gamesPerPage = useSelector((state) => state.gamesPerPage);
   let pageMax = Math.ceil(allGames.length / gamesPerPage)
   let dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(getAllGames())
-    dispatch(getPlatforms())
-    dispatch(getGenres())
-  },[dispatch]);
+ 
   
   if(allGames === 'No se encontró algo') {
     return <NotFound></NotFound>
+  }
+
+  const handleStart = () => {
+    dispatch(getAllGames())
+    dispatch(getGenres())
   }
 
   return (
@@ -39,18 +41,18 @@ function Cards() {
           .map((game, i) => (
             
             <Card key={i}
-            genres={game.genres?.map(genre =>  typeof genre === 'object'? genre.name: genre )}
+            genres={game.genres?.map(genre => genre )}
+            Genres={game.Genres?.map(genre => genre.name )}
             id={game.id}
             image={game.image}
             name={game.name}
             rating={game.rating}
-            plataforms={game.plataforms}
+            platforms={game.platforms}
             ></Card>
             
           ))} </div>
       </div>
-        : <Loading></Loading>}
-
+        : <button onClick={() =>  handleStart()}>See Games</button>}
     </>
   );
 }

@@ -8,10 +8,12 @@ import {
   GET_PLATFORMS,
   GET_GENRES,
   ORDER_BY,
+  FILTERGENRE,
 } from "./actions";
 
 const initialState = {
   videoGames: [],
+  copyvideoGames: [],
   videoGamesDetail: {},
   genres: [],
   platforms: [],
@@ -25,8 +27,8 @@ const rootReducer = (state = initialState, action) => {
     case GET_VIDEOGAMES:
       return {
         ...state,
-
         videoGames: action.payload,
+        copyvideoGames: action.payload
       };
     case GET_DETAIL:
       return {
@@ -64,11 +66,11 @@ const rootReducer = (state = initialState, action) => {
     case GET_GENRES:
       return {
         ...state,
-        genres: action.payload,
+        genres: action.payload.sort((a,b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())),
       };
 
     case ORDER_BY:
-      let copy = [...state.videoGames];
+      const copy = [...state.videoGames];
       switch (action.payload) {
         case "A-Z":
           return {
@@ -97,7 +99,21 @@ const rootReducer = (state = initialState, action) => {
           };
 
         default:
+          return { ...state };
       }
+
+    case FILTERGENRE:
+      console.log(action.payload)
+      let aux = [...state.copyvideoGames];
+
+      for (const i of action.payload) {
+        const filter = aux.filter((f) => f.genres?.includes(i) || f.Genres?.some(g => g.name === i));
+        aux = filter;
+      }
+      return {
+        ...state,
+        videoGames: action.payload.length===0?state.copyvideoGames :aux,
+      };
 
     default:
       return { ...state };

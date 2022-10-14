@@ -63,7 +63,9 @@ const getGameQuery = async (game) => {
     return {
       id: g.id,
       name: g.name,
+      rating: g.rating,
       image: g.background_image,
+      platforms: g.platforms?.map((p) => p.platform.name),
       genres: g.genres?.map((g) => g.name),
     };
   });
